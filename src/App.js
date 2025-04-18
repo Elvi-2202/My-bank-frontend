@@ -9,7 +9,7 @@ import CategoryPage from './pages/CategoryPage';
 import './App.css';
 
 const App = () => {
-    return (
+    return ( 
         <Router>
             <Navbar />
             <main>
