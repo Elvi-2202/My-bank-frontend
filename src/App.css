@@ -1,0 +1,346 @@
+/* Styles globaux */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9; 
+}
+
+/* Styles globaux (révisés pour l'arrière-plan dégradé) */
+body {
+  background: linear-gradient(to bottom, #f9fafb);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Main container styles */
+main {
+  padding: 20px;
+}
+
+/* Navbar styles */
+.navbar {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  width: 100%; /* S'assure que la navbar prend toute la largeur */
+  position: fixed; /* Garde la navbar fixée en haut */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* S'assure que la navbar est au-dessus d'autres éléments */
+}
+
+/* Footer styles */
+.footer {
+  background-color: #f1f1f1;
+  color: #333;
+  text-align: center;
+  padding: 10px 20px;
+  width: 100%; /* S'assure que le footer prend toute la largeur */
+  position: fixed; /* Garde le footer fixée en bas */
+  bottom: 0;
+  left: 0;
+}
+
+/* Button styles */
+.button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+/* Conteneur principal centré verticalement */
+.login-container {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9f9f9;
+  padding: 40px;
+  gap: 100px; /* ⚙️ Ajout d'un espace entre logo et formulaire */
+}
+
+/* Partie gauche : logo et texte */
+.login-left {
+  text-align: center;
+  max-width: 400px;
+}
+
+.login-logo {
+  width: 200px; /* ✅ Agrandi le logo */
+  margin-bottom: 30px;
+}
+
+.login-left h1 {
+  font-size: 2.5rem; /* ✅ Texte plus grand */
+  color: #222;
+  margin-bottom: 15px;
+}
+
+.login-left p {
+  color: #666;
+  font-size: 1.2rem; /* ✅ Plus lisible */
+  margin: 0;
+}
+
+/* Carte de connexion */
+.login-form-card {
+  background: white;
+  padding: 50px 40px; /* ✅ Agrandir la carte */
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 400px; /* ✅ Plus large */
+}
+
+.login-form-card h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* Champs de saisie */
+.login-form-card input {
+  width: 100%;
+  padding: 16px; /* ✅ Champs plus grands */
+  margin: 16px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  box-sizing: border-box;
+}
+
+/* Bouton de connexion */
+.login-form-card button {
+  width: 100%;
+  padding: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: bold;
+}
+
+.login-form-card button:hover {
+  background-color: #0056b3;
+}
+
+/* Lien vers inscription */
+.register-link {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+  color: #007bff;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive (version mobile) */
+@media screen and (max-width: 900px) {
+  .login-container {
+    flex-direction: column;
+    gap: 50px; /* Réduit l'espace entre les blocs sur mobile */
+    padding: 20px;
+  }
+
+  .login-form-card {
+    width: 100%; /* S'adapte à la taille de l'écran */
+    max-width: 400px;
+  }
+
+  .login-logo {
+    width: 150px;
+  }
+
+  .login-left h1 {
+    font-size: 2rem;
+  }
+
+  .login-left p {
+    font-size: 1rem;
+  }
+}
+
+/* Avatar */
+.avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+/* Groupe d'entrée */
+.input-group {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.input-group .icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.input-group input {
+  background: transparent;
+  border: none;
+  color: white;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.input-group input:focus {
+  outline: none;
+}
+
+/* Se rappeler de moi et mot de passe oublié */
+.remember-and-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 0;
+  font-size: 0.9rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+}
+
+.remember-me input {
+  margin-right: 5px;
+}
+
+.forgot-password {
+  color: #add8e6;
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* Bouton de connexion */
+.login-button {
+  width: 100%;
+  background: #003c8f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.login-button:hover {
+  background: #0056b3;
+}
+
+/* Dashboard page styles */
+.dashboard-page {
+  text-align: center;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour la page des opérations */
+.operation-page {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 30px;
+  background-color: white;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  text-align: center;
+  height: 400px; /* Ajustez cette valeur selon vos besoins */
+ 
+}
+
+.operation-page h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.operation-page input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.operation-page button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.operation-page button:hover {
+  background-color: #0056b3;
+}
+
+/* Liste des opérations */
+.operation-list {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.operation-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.operation-list .operation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.operation-list .operation-item button {
+  margin-left: 10px;
+}
+
+/* Category page styles */
+.category-page {
+  padding: 20px;
+}
