@@ -1,18 +1,31 @@
-import React, { useState } from 'react';
+// src/pages/LoginPage.js
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../Api";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    alert(`Tentative de connexion avec : ${username}`);
-    // Ici tu peux connecter à ton API
+    setLoading(true);
+    try {
+      const token = await loginUser({ username, password });
+      localStorage.setItem("jwtToken", token);
+      alert("Connexion réussie !");
+      navigate("/dashboard");
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="login-container">
-      {/* Partie gauche : Logo et slogan */}
       <div className="login-left">
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
@@ -22,8 +35,6 @@ const LoginPage = () => {
         <h1>My Bank</h1>
         <p>Moins de complexité, plus de sécurité</p>
       </div>
-
-      {/* Partie droite : Formulaire de connexion */}
       <div className="login-form-card">
         <h2>Se connecter</h2>
         <form onSubmit={handleLogin}>
@@ -41,7 +52,9 @@ const LoginPage = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">SE CONNECTER</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Connexion..." : "SE CONNECTER"}
+          </button>
         </form>
         <a href="/register" className="register-link">
           Vous n'avez pas de compte ? Inscrivez-vous

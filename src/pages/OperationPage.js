@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { addOperation } from "../Api"; // attention à la casse : api.js en minuscule
 
 const CATEGORIES = [
   'Logement',
@@ -10,28 +11,49 @@ const CATEGORIES = [
   'Autre'
 ];
 
-const OperationPage = ({ addOperation }) => {
+const OperationPage = () => {
   const [libelle, setLibelle] = useState('');
   const [montant, setMontant] = useState('');
   const [date, setDate] = useState('');
   const [categorie, setCategorie] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleAddOperation = (e) => {
+  const handleAddOperation = async (e) => {
     e.preventDefault();
-    if (libelle && montant && date && categorie) {
-      addOperation({
-        libelle,
-        montant: parseFloat(montant),
+
+    if (!(libelle && montant && date && categorie)) {
+      alert('Veuillez remplir tous les champs.');
+      return;
+    }
+
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+      alert("Vous devez être connecté.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Appelle la fonction API en adaptant les clés attendues par le backend
+      await addOperation(token, {
+        label: libelle,
+        amount: parseFloat(montant),
         date,
-        categorie
+        category_id: CATEGORIES.indexOf(categorie) + 1, // ici l’id fictif, adapte si tu as vrai id
       });
+
+      alert('Opération ajoutée à la catégorie !');
+
+      // Reset formulaire
       setLibelle('');
       setMontant('');
       setDate('');
       setCategorie('');
-      alert('Opération ajoutée à la catégorie !');
-    } else {
-      alert('Veuillez remplir tous les champs.');
+    } catch (error) {
+      alert("Erreur lors de l’ajout : " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,7 +94,9 @@ const OperationPage = ({ addOperation }) => {
             <option value={cat} key={cat}>{cat}</option>
           ))}
         </select>
-        <button className="button" type="submit">Ajouter</button>
+        <button className="button" type="submit" disabled={loading}>
+          {loading ? "Ajout en cours..." : "Ajouter"}
+        </button>
       </form>
     </div>
   );

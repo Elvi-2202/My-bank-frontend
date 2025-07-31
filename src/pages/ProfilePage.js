@@ -1,247 +1,199 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faGlobe,
-  faEnvelope,
-  faPhone,
-  faMobileAlt,
-  faMapMarkerAlt
-} from '@fortawesome/free-solid-svg-icons';
-import {
-  faGithub,
-  faFacebook,
-  faTwitter,
-  faInstagram
-} from '@fortawesome/free-brands-svg-icons';
+// src/pages/ProfilePage.js
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
+const API_BASE_URL = "https://127.0.0.1:8000/api";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
 
-  // Champs modifiables
-  const [fullName, setFullName] = useState('Kenneth Valdez');
-  const [email, setEmail] = useState('fip@jukmuh.al');
-  const [phone, setPhone] = useState('(239) 816-9029');
-  const [mobile, setMobile] = useState('(320) 380-4539');
-  const [address, setAddress] = useState('Bay Area, San Francisco, CA');
+  // États pour les champs utilisateur
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [address, setAddress] = useState("");
 
-  // Réseaux sociaux modifiables
-  const [website, setWebsite] = useState('https://bootdey.com');
-  const [github, setGithub] = useState('bootdey');
-  const [twitter, setTwitter] = useState('@bootdey');
-  const [instagram, setInstagram] = useState('bootdey');
-  const [facebook, setFacebook] = useState('bootdey');
+  // États pour réseaux sociaux
+  const [website, setWebsite] = useState("");
+  const [github, setGithub] = useState("");
+  const [twitter, setTwitter] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [facebook, setFacebook] = useState("");
 
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Charger les infos utilisateur au montage du composant
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+      alert("Vous devez être connecté.");
+      navigate("/login");
+      return;
+    }
+
+    async function fetchProfile() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem("jwtToken");
+          alert("Session expirée, veuillez vous reconnecter.");
+          navigate("/login");
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Erreur lors du chargement du profil");
+        }
+
+        const data = await response.json();
+
+        // Adapter selon la structure reçue
+        setFullName(data.fullName || data.full_name || "");
+        setEmail(data.email || "");
+        setPhone(data.phone || "");
+        setMobile(data.mobile || "");
+        setAddress(data.address || "");
+
+        setWebsite(data.website || "");
+        setGithub(data.github || "");
+        setTwitter(data.twitter || "");
+        setInstagram(data.instagram || "");
+        setFacebook(data.facebook || "");
+
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    }
+
+    fetchProfile();
+  }, [navigate]);
+
+  // Sauvegarder les modifications du profil
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Profil mis à jour !');
-    // Ici, tu peux connecter à ton API pour sauvegarder les infos
+
+    setSaving(true);
+    setError(null);
+
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+      alert("Vous devez être connecté.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/profile`, {
+        method: "PUT", // ou PATCH selon backend
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          fullName,
+          email,
+          phone,
+          mobile,
+          address,
+          website,
+          github,
+          twitter,
+          instagram,
+          facebook,
+        }),
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem("jwtToken");
+        alert("Session expirée, veuillez vous reconnecter.");
+        navigate("/login");
+        return;
+      }
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "Erreur lors de la sauvegarde");
+      }
+
+      alert("Profil mis à jour avec succès !");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
+  if (loading) return <div>Chargement du profil...</div>;
+  if (error) return <div style={{ color: "red" }}>Erreur : {error}</div>;
+
   return (
-    <div className="profile-bg">
-      <div className="profile-breadcrumbs">
-        <span
-          style={{ cursor: 'pointer', color: '#007bff' }}
-          onClick={() => navigate('/dashboard')}
-        >
-          Home
-        </span>
-        {' / '}
-        <span>User</span> / <span className="active">User Profile</span>
-      </div>
-      <div className="profile-container">
-        {/* Colonne gauche : profil et réseaux sociaux */}
-        <div className="profile-sidebar">
-          <div className="profile-card">
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar7.png"
-              alt="Avatar"
-              className="profile-avatar"
-            />
-            <h3>{fullName}</h3>
-            <p className="profile-title">Full Stack Developer</p>
-            <p className="profile-location">{address}</p>
-            <div className="profile-actions">
-              <button className="btn btn-primary">Follow</button>
-              <button className="btn btn-outline">Message</button>
-            </div>
-          </div>
-          <form className="profile-links" onSubmit={handleSubmit}>
-            <div className="profile-link-row">
-              <FontAwesomeIcon icon={faGlobe} style={{ marginRight: 8 }} color="#00B86B" />
-              <input
-                type="text"
-                value={website}
-                onChange={e => setWebsite(e.target.value)}
-                className="profile-input"
-                placeholder="Website"
-              />
-            </div>
-            <div className="profile-link-row">
-              <FontAwesomeIcon icon={faGithub} style={{ marginRight: 8 }} color="#333" />
-              <input
-                type="text"
-                value={github}
-                onChange={e => setGithub(e.target.value)}
-                className="profile-input"
-                placeholder="Github"
-              />
-            </div>
-            <div className="profile-link-row">
-              <FontAwesomeIcon icon={faTwitter} style={{ marginRight: 8 }} color="#1DA1F2" />
-              <input
-                type="text"
-                value={twitter}
-                onChange={e => setTwitter(e.target.value)}
-                className="profile-input"
-                placeholder="Twitter"
-              />
-            </div>
-            <div className="profile-link-row">
-              <FontAwesomeIcon icon={faInstagram} style={{ marginRight: 8 }} color="#E4405F" />
-              <input
-                type="text"
-                value={instagram}
-                onChange={e => setInstagram(e.target.value)}
-                className="profile-input"
-                placeholder="Instagram"
-              />
-            </div>
-            <div className="profile-link-row">
-              <FontAwesomeIcon icon={faFacebook} style={{ marginRight: 8 }} color="#1877F3" />
-              <input
-                type="text"
-                value={facebook}
-                onChange={e => setFacebook(e.target.value)}
-                className="profile-input"
-                placeholder="Facebook"
-              />
-            </div>
-            <button type="submit" className="btn btn-primary" style={{ marginTop: 10, width: '100%' }}>
-              Enregistrer les liens
-            </button>
-          </form>
-        </div>
-        {/* Colonne droite : infos et statut */}
-        <div className="profile-main">
-          <form className="profile-info-card" onSubmit={handleSubmit}>
-            <div className="profile-info-row">
-              <div className="profile-info-label">
-                <FontAwesomeIcon icon={faGlobe} style={{ marginRight: 6 }} color="#00B86B" />
-                Full Name
-              </div>
-              <div className="profile-info-value">
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={e => setFullName(e.target.value)}
-                  className="profile-input"
-                  required
-                />
-              </div>
-            </div>
-            <div className="profile-info-row">
-              <div className="profile-info-label">
-                <FontAwesomeIcon icon={faEnvelope} style={{ marginRight: 6 }} color="#EA4335" />
-                Email
-              </div>
-              <div className="profile-info-value">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="profile-input"
-                  required
-                />
-              </div>
-            </div>
-            <div className="profile-info-row">
-              <div className="profile-info-label">
-                <FontAwesomeIcon icon={faPhone} style={{ marginRight: 6 }} color="#34A853" />
-                Phone
-              </div>
-              <div className="profile-info-value">
-                <input
-                  type="text"
-                  value={phone}
-                  onChange={e => setPhone(e.target.value)}
-                  className="profile-input"
-                />
-              </div>
-            </div>
-            <div className="profile-info-row">
-              <div className="profile-info-label">
-                <FontAwesomeIcon icon={faMobileAlt} style={{ marginRight: 6 }} color="#4285F4" />
-                Mobile
-              </div>
-              <div className="profile-info-value">
-                <input
-                  type="text"
-                  value={mobile}
-                  onChange={e => setMobile(e.target.value)}
-                  className="profile-input"
-                />
-              </div>
-            </div>
-            <div className="profile-info-row">
-              <div className="profile-info-label">
-                <FontAwesomeIcon icon={faMapMarkerAlt} style={{ marginRight: 6 }} color="#FABB05" />
-                Address
-              </div>
-              <div className="profile-info-value">
-                <input
-                  type="text"
-                  value={address}
-                  onChange={e => setAddress(e.target.value)}
-                  className="profile-input"
-                />
-              </div>
-            </div>
-            <div style={{ textAlign: 'right', marginTop: 16 }}>
-              <button type="submit" className="btn btn-primary">Enregistrer</button>
-            </div>
-          </form>
-          <div className="profile-status-cards">
-            <div className="profile-status-card">
-              <div className="profile-status-title">
-                <span className="assignment" style={{ color: "#007bff", fontStyle: "italic" }}>assignment</span> Project Status
-              </div>
-              <div className="profile-status-item">
-                Web Design
-                <div className="progress-bar">
-                  <div className="progress" style={{ width: '80%' }}></div>
-                </div>
-              </div>
-              <div className="profile-status-item">
-                Website Markup
-                <div className="progress-bar">
-                  <div className="progress" style={{ width: '72%' }}></div>
-                </div>
-              </div>
-              <div className="profile-status-item">
-                One Page
-                <div className="progress-bar">
-                  <div className="progress" style={{ width: '89%' }}></div>
-                </div>
-              </div>
-              <div className="profile-status-item">
-                Mobile Template
-                <div className="progress-bar">
-                  <div className="progress" style={{ width: '55%' }}></div>
-                </div>
-              </div>
-              <div className="profile-status-item">
-                Backend API
-                <div className="progress-bar">
-                  <div className="progress" style={{ width: '66%' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="profile-bg" style={{ padding: "1rem", maxWidth: "700px", margin: "auto" }}>
+      <h2>Profil utilisateur</h2>
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <label>
+          Nom complet
+          <input
+            type="text"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          E-mail
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        </label>
+        <label>
+          Téléphone
+          <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        </label>
+        <label>
+          Mobile
+          <input type="text" value={mobile} onChange={(e) => setMobile(e.target.value)} />
+        </label>
+        <label>
+          Adresse
+          <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
+        </label>
+
+        <h3>Réseaux sociaux</h3>
+        <label>
+          Website
+          <input type="text" value={website} onChange={(e) => setWebsite(e.target.value)} />
+        </label>
+        <label>
+          Github
+          <input type="text" value={github} onChange={(e) => setGithub(e.target.value)} />
+        </label>
+        <label>
+          Twitter
+          <input type="text" value={twitter} onChange={(e) => setTwitter(e.target.value)} />
+        </label>
+        <label>
+          Instagram
+          <input type="text" value={instagram} onChange={(e) => setInstagram(e.target.value)} />
+        </label>
+        <label>
+          Facebook
+          <input type="text" value={facebook} onChange={(e) => setFacebook(e.target.value)} />
+        </label>
+
+        <button type="submit" disabled={saving}>
+          {saving ? "Sauvegarde en cours..." : "Enregistrer le profil"}
+        </button>
+      </form>
     </div>
   );
 };

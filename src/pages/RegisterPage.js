@@ -1,33 +1,38 @@
-// src/pages/RegisterPage.js
-import React, { useState } from 'react';
+// src/RegisterPage.js
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../Api";
 
 const RegisterPage = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     if (password !== confirm) {
       alert("Les mots de passe ne correspondent pas.");
       return;
     }
-    alert(`Inscription : ${username} (${email})`);
-    // Ici tu peux connecter à ton API d’inscription
+
+    setLoading(true);
+    try {
+      await registerUser({ username, email, password });
+      alert("Inscription réussie. Vous pouvez maintenant vous connecter.");
+      navigate("/login");
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="login-container">
-      <div className="login-left">
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
-          alt="Logo"
-          className="login-logo"
-        />
-        <h1>My Bank</h1>
-        <p>Moins de complexité, plus de sécurité</p>
-      </div>
+      {/* Partie gauche... */}
       <div className="login-form-card">
         <h2>Créer un compte</h2>
         <form onSubmit={handleRegister}>
@@ -59,9 +64,11 @@ const RegisterPage = () => {
             onChange={(e) => setConfirm(e.target.value)}
             required
           />
-          <button type="submit">S'INSCRIRE</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Inscription..." : "S'INSCRIRE"}
+          </button>
         </form>
-        <a href="/" className="register-link">
+        <a href="/login" className="register-link">
           Déjà un compte ? Connectez-vous
         </a>
       </div>
